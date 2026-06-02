@@ -152,7 +152,7 @@ class ItemDataService
 
         $path = $image->store('items', 'public');
 
-        return [Storage::disk('public')->url($path), $path];
+        return ['/storage/'.$path, $path];
     }
 
     private function openItemsQuery()

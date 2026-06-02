@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Lost & Found') — RUPP</title>
-    <link href="{{ asset('assets/bootstrap-5.3.3/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/bootstrap-icons/font/bootstrap-icons.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/lostfound.css') }}" rel="stylesheet">
+    <link href="/assets/bootstrap-5.3.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/assets/lostfound.css" rel="stylesheet">
     @stack('styles')
 </head>
 <body class="bg-white">
@@ -27,7 +27,7 @@
 
     @yield('content')
 
-    <script src="{{ asset('assets/bootstrap-5.3.3/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="/assets/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('submit', async function (event) {
             const form = event.target.closest('[data-cf-claim-form]');

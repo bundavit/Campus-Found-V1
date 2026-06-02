@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Dashboard — Lost & Found</title>
-    <link href="{{ asset('assets/bootstrap-5.3.3/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/lostfound.css') }}" rel="stylesheet">
+    <link href="/assets/bootstrap-5.3.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/lostfound.css" rel="stylesheet">
 </head>
 <body class="bg-light admin-shell">
     @include('admin.partials.sidebar')
@@ -310,7 +310,7 @@
         @endforeach
     @endif
 
-    <script src="{{ asset('assets/bootstrap-5.3.3/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="/assets/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('click', function (event) {
             if (event.target.closest('a, button, input, select, textarea, form')) {

@@ -1,7 +1,12 @@
 <header class="cf-topbar">
     <div class="cf-container cf-nav">
         <div class="cf-nav-left">
-            <a href="{{ route('home') }}" class="cf-brand">LOST <span>&amp; FOUND</span></a>
+            <a href="{{ route('home') }}" class="cf-brand">
+                <span class="cf-brand-mark" aria-hidden="true">
+                    <img src="/assets/campus-found-logo-nav.png" alt="" class="cf-brand-logo">
+                </span>
+                <span>Campus Found</span>
+            </a>
             <nav class="cf-nav-links" aria-label="Primary">
                 <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
                 <a href="{{ route('board.index') }}" class="{{ request()->routeIs('board.index') ? 'active' : '' }}">Board</a>

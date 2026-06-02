@@ -658,11 +658,36 @@
 }
 
 .cf-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.72rem;
     color: var(--cf-primary);
-    font-size: 1.45rem;
+    font-size: 1.65rem;
     font-weight: 800;
     text-decoration: none;
     white-space: nowrap;
+}
+
+.cf-brand-mark {
+    width: 52px;
+    height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    overflow: hidden;
+    background: transparent;
+    border: 0;
+    border-radius: 1rem;
+    box-shadow: none;
+}
+
+.cf-brand-logo {
+    width: 52px;
+    height: 52px;
+    display: block;
+    object-fit: contain;
+    object-position: center;
 }
 
 .cf-nav-links {
@@ -988,7 +1013,7 @@
     border: 1px solid var(--cf-border);
     border-radius: 1rem;
     box-shadow: var(--cf-shadow);
-    transition: transform 0.16s ease, box-shadow 0.16s ease;
+    transition: all 0.2s ease;
 }
 
 .cf-report-card[role="button"] {
@@ -1001,8 +1026,8 @@
 }
 
 .cf-report-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 18px 32px -20px rgba(15, 23, 42, 0.35);
+    transform: translateY(-4px);
+    box-shadow: 0 22px 38px -20px rgba(15, 23, 42, 0.42);
 }
 
 .cf-report-media {
@@ -1381,6 +1406,25 @@
     border-color: var(--cf-primary);
 }
 
+.cf-chip {
+    color: #2563eb;
+    border-color: #2563eb;
+    transition: all 0.2s ease;
+}
+
+.cf-chip:hover {
+    color: #2563eb;
+    background: #eff6ff;
+    border-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+.cf-chip.active {
+    color: #fff;
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
 .cf-filter-pill {
     min-width: 8.6rem;
     min-height: 46px;
@@ -1389,40 +1433,55 @@
     border: 2px solid #1f252b;
     font-size: 1rem;
     text-transform: uppercase;
+    transition: all 0.2s ease;
 }
 
 .cf-filter-pill:hover,
 .cf-filter-pill.active {
     color: #fff;
-    background: #1f252b;
-    border-color: #1f252b;
+    background: #111827;
+    border-color: #111827;
+}
+
+.cf-filter-pill:hover {
+    transform: scale(1.03);
 }
 
 .cf-filter-lost {
     color: #dc2626;
-    border-color: #dc2626;
+    border-color: #ef4444;
 }
 
-.cf-filter-lost:hover,
+.cf-filter-lost:hover {
+    color: #dc2626;
+    background: #fee2e2;
+    border-color: #ef4444;
+}
+
 .cf-filter-lost.active {
     color: #fff;
-    background: #dc2626;
-    border-color: #dc2626;
+    background: #ef4444;
+    border-color: #ef4444;
 }
 
 .cf-filter-found,
 .cf-filter-return {
     color: #047857;
-    border-color: #047857;
+    border-color: #10b981;
 }
 
 .cf-filter-found:hover,
+.cf-filter-return:hover {
+    color: #047857;
+    background: #d1fae5;
+    border-color: #10b981;
+}
+
 .cf-filter-found.active,
-.cf-filter-return:hover,
 .cf-filter-return.active {
     color: #fff;
-    background: #047857;
-    border-color: #047857;
+    background: #10b981;
+    border-color: #10b981;
 }
 
 .cf-filter-claim {
@@ -1441,7 +1500,7 @@
     display: flex;
     justify-content: flex-end;
     gap: 0.85rem;
-    margin: 1.5rem 0 2rem;
+    margin: 1.25rem 0 1.15rem;
 }
 
 .cf-board-controls label {
@@ -2027,7 +2086,21 @@
     }
 
     .cf-brand {
-        display: block;
+        display: inline-flex;
+        justify-content: center;
+        gap: 0.55rem;
+        font-size: 1.35rem;
+    }
+
+    .cf-brand-mark {
+        width: 40px;
+        height: 40px;
+        border-radius: 0.72rem;
+    }
+
+    .cf-brand-logo {
+        width: 40px;
+        height: 40px;
     }
 
     .cf-nav-links {
@@ -2183,6 +2256,118 @@
     .cf-footer-grid,
     .cf-claim-grid {
         grid-template-columns: 1fr;
+    }
+
+    .cf-board-page .cf-report-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+    }
+
+    .cf-claims-page .cf-claim-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+    }
+
+    .cf-board-page .cf-report-media {
+        aspect-ratio: 1 / 0.82;
+    }
+
+    .cf-board-page .cf-report-body {
+        padding: 0.8rem;
+    }
+
+    .cf-board-page .cf-card-topline {
+        font-size: 0.62rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .cf-board-page .cf-report-body h3 {
+        margin-bottom: 0.55rem;
+        font-size: 0.96rem;
+        line-height: 1.2;
+    }
+
+    .cf-board-page .cf-report-body p {
+        gap: 0.35rem;
+        margin-bottom: 0.25rem;
+        font-size: 0.72rem;
+        line-height: 1.25;
+    }
+
+    .cf-board-page .cf-report-body p:last-of-type {
+        margin-bottom: 0.7rem;
+    }
+
+    .cf-board-page .cf-report-body i {
+        font-size: 0.78rem;
+    }
+
+    .cf-board-page .cf-status {
+        top: 0.55rem;
+        left: 0.55rem;
+        padding: 0.2rem 0.55rem;
+        font-size: 0.62rem;
+    }
+
+    .cf-board-page .cf-report-body .cf-btn {
+        min-height: 34px;
+        padding: 0.45rem 0.65rem;
+        font-size: 0.76rem;
+        border-radius: 0.55rem;
+    }
+
+    .cf-claims-page .cf-claim-card {
+        padding: 0.8rem;
+        border-radius: 0.85rem;
+    }
+
+    .cf-claims-page .cf-claim-card-head {
+        align-items: flex-start;
+        gap: 0.45rem;
+        margin-bottom: 0.7rem;
+    }
+
+    .cf-claims-page .cf-claim-card-head small {
+        font-size: 0.68rem;
+        text-align: right;
+    }
+
+    .cf-claims-page .cf-request-badge {
+        padding: 0.2rem 0.55rem;
+        font-size: 0.62rem;
+    }
+
+    .cf-claims-page .cf-claim-card h3 {
+        margin-bottom: 0.7rem;
+        font-size: 0.96rem;
+        line-height: 1.2;
+    }
+
+    .cf-claims-page .cf-claim-card p {
+        display: block;
+        margin-bottom: 0.35rem;
+        font-size: 0.72rem;
+        line-height: 1.25;
+    }
+
+    .cf-claims-page .cf-claim-card p span {
+        display: block;
+        margin-bottom: 0.1rem;
+    }
+
+    .cf-claims-page .cf-message-preview {
+        min-height: 58px;
+        margin-top: 0.65rem;
+        padding: 0.65rem;
+        font-size: 0.72rem;
+        line-height: 1.35;
+    }
+
+    .cf-claims-page .cf-claim-card .cf-btn {
+        min-height: 34px;
+        padding: 0.45rem 0.65rem;
+        font-size: 0.76rem;
+        border-radius: 0.55rem;
     }
 
     .cf-metric-grid {

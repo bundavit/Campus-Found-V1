@@ -42,7 +42,7 @@ class Item extends Model
             return '';
         }
 
-        return Storage::disk('public')->url($this->image_path);
+        return '/storage/'.$this->image_path;
     }
 
     public function claims(): HasMany
