@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Models\ItemClaim;
 use App\Services\ClaimDataService;
 use Illuminate\Http\Request;
 
@@ -33,15 +34,20 @@ class ClaimController extends Controller
             'claimant_name' => ['nullable', 'string', 'max:255'],
             'contact_info' => ['required', 'string', 'max:255'],
             'message' => ['nullable', 'string', 'max:1000'],
+            'verification_answer' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $item = Item::findOrFail($validated['item_id']);
 
-        $claim = $claims->create($item, $validated);
+        if ($item->status === 'found' && $item->verification_question && blank($validated['verification_answer'] ?? null)) {
+            return back()->withErrors(['verification_answer' => 'Answer the ownership verification question.']);
+        }
+
+        $claim = $claims->create($item, $validated, $request->user()->id);
 
         $message = $item->status === 'found'
-            ? 'Claim submitted successfully. The reporter will contact you soon.'
-            : 'Found report submitted successfully. The owner will contact you soon.';
+            ? 'Claim submitted for verification. The reporter will review your answer.'
+            : 'Found report submitted. The owner will review it.';
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -59,5 +65,19 @@ class ClaimController extends Controller
         return redirect()
             ->route('claims.index', ['type' => $item->status === 'found' ? 'claim' : 'return'])
             ->with('success', $message);
+    }
+
+    public function review(Request $request, ItemClaim $claim, ClaimDataService $claims)
+    {
+        $claim->load('item');
+        abort_unless(
+            $claim->item && (int) $claim->item->user_id === (int) $request->user()->id,
+            403
+        );
+
+        $validated = $request->validate(['status' => ['required', 'in:approved,rejected']]);
+        $claims->review($claim, $validated['status'], $request->user()->id);
+
+        return back()->with('success', 'Claim '.$validated['status'].' successfully.');
     }
 }

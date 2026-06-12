@@ -124,7 +124,7 @@
                 <div class="cf-section-head">
                     <div>
                         <h2>Explore by Category</h2>
-                        <p>Browse common RUPP item types to find your belongings.</p>
+                        <p>Browse common campus item types to find your belongings.</p>
                     </div>
                     <a href="{{ route('board.index') }}" class="cf-link-action">
                         View All Categories <i class="bi bi-arrow-right"></i>

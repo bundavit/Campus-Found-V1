@@ -18,8 +18,8 @@
 <div class="cf-page cf-board-page">
     <section class="cf-board-hero">
         <div class="cf-container">
-            <h1>RUPP Community Board</h1>
-            <p>Find your belongings within the RUPP community.</p>
+            <h1>Lost &amp; Found Board</h1>
+            <p>Browse lost and found reports from the campus community.</p>
         </div>
     </section>
 

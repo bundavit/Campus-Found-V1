@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ItemClaim;
 use App\Services\ClaimDataService;
 use App\Services\ItemDataService;
 use Illuminate\Http\Request;
@@ -16,6 +17,7 @@ class AdminDashboardController extends Controller
         $status = $request->query('status', 'all');
         $category = $request->query('category', 'all');
         $claimFilter = $request->query('claim_status', 'all');
+        $reviewStatus = $request->query('review_status', 'all');
 
         $allItems = $items->filtered([
             'status' => $status,
@@ -26,6 +28,7 @@ class AdminDashboardController extends Controller
 
         $allClaims = $claims->filtered([
             'type' => $claimFilter,
+            'status' => $reviewStatus,
             'category' => $category,
             'search' => $search,
             'sort' => $sort,
@@ -43,11 +46,13 @@ class AdminDashboardController extends Controller
             'category' => $category,
             'categories' => config('lostfound.categories'),
             'claimFilter' => $claimFilter,
+            'reviewStatus' => $reviewStatus,
             'totalItems' => count($allItems),
             'lostItems' => collect($allItems)->where('status', 'lost')->count(),
             'foundItems' => collect($allItems)->where('status', 'found')->count(),
             'totalClaims' => count($claimStats),
             'ownershipClaims' => collect($claimStats)->where('type', 'claim')->count(),
+            'pendingClaims' => collect($claimStats)->where('status', 'pending')->count(),
         ]);
     }
 
@@ -67,5 +72,20 @@ class AdminDashboardController extends Controller
         return redirect()
             ->back()
             ->with('success', 'Claim removed.');
+    }
+
+    public function reviewClaim(Request $request, ItemClaim $claim)
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'in:approved,rejected'],
+        ]);
+
+        $claim->update([
+            'status' => $validated['status'],
+            'reviewed_at' => now(),
+            'reviewed_by' => null,
+        ]);
+
+        return redirect()->back()->with('success', 'Claim '.$validated['status'].'.');
     }
 }

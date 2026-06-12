@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Lost & Found') — RUPP</title>
+    <title>@yield('title', 'Campus Found') - Campus Found</title>
     <link rel="icon" type="image/png" href="{{ asset('assets/campus-found-logo-nav.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('assets/campus-found-logo-nav.png') }}">
     <link href="/assets/bootstrap-5.3.3/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="/assets/lostfound.css?v=20260609-10" rel="stylesheet">
+    <link href="/assets/lostfound.css?v=20260612-2" rel="stylesheet">
     @stack('styles')
 </head>
 <body class="bg-white">
@@ -18,12 +18,12 @@
 
     @if (session('success'))
         <div class="container mt-3">
-            <div class="alert alert-success border-2 border-dark fw-bold mb-0">{{ session('success') }}</div>
+            <div class="alert alert-success border-2 border-dark fw-bold mb-0" data-auto-dismiss>{{ session('success') }}</div>
         </div>
     @endif
     @if (session('error'))
         <div class="container mt-3">
-            <div class="alert alert-danger border-2 border-dark fw-bold mb-0">{{ session('error') }}</div>
+            <div class="alert alert-danger border-2 border-dark fw-bold mb-0" data-auto-dismiss>{{ session('error') }}</div>
         </div>
     @endif
 
@@ -31,6 +31,16 @@
 
     <script src="/assets/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
     <script>
+        document.querySelectorAll('[data-auto-dismiss]').forEach(function (message) {
+            window.setTimeout(function () {
+                message.style.transition = 'opacity 0.3s ease';
+                message.style.opacity = '0';
+                window.setTimeout(function () {
+                    message.parentElement?.remove();
+                }, 300);
+            }, 5000);
+        });
+
         document.addEventListener('submit', async function (event) {
             const form = event.target.closest('[data-cf-claim-form]');
             if (!form) {

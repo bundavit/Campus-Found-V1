@@ -7,22 +7,35 @@ use App\Models\ItemClaim;
 
 class ClaimDataService
 {
-    public function create(Item $item, array $data): array
+    public function create(Item $item, array $data, ?int $userId = null): array
     {
         $type = $item->status === 'found' ? 'claim' : 'found';
 
         $claim = ItemClaim::create([
             'item_id' => $item->id,
+            'user_id' => $userId,
             'type' => $type,
-            'status' => 'approved',
+            'status' => 'pending',
             'claimant_name' => $data['claimant_name'] ?? null,
             'contact_info' => $data['contact_info'],
             'message' => $data['message'] ?? null,
+            'verification_answer' => $data['verification_answer'] ?? null,
         ]);
 
         $claim->load('item');
 
         return $claim->toDisplayArray();
+    }
+
+    public function review(ItemClaim $claim, string $status, int $reviewerId): array
+    {
+        $claim->update([
+            'status' => $status,
+            'reviewed_at' => now(),
+            'reviewed_by' => $reviewerId,
+        ]);
+
+        return $claim->fresh('item')->toDisplayArray();
     }
 
     public function recent(int $limit = 4): array
@@ -40,6 +53,18 @@ class ClaimDataService
     public function filtered(array $filters = []): array
     {
         $query = ItemClaim::query()->with('item');
+
+        if (! session('is_admin')) {
+            $userId = auth()->id();
+            $query->where(function ($visibility) use ($userId) {
+                $visibility->where('status', 'approved');
+
+                if ($userId) {
+                    $visibility->orWhere('user_id', $userId)
+                        ->orWhereHas('item', fn ($item) => $item->where('user_id', $userId));
+                }
+            });
+        }
 
         if (! empty($filters['type']) && $filters['type'] !== 'all') {
             $type = $filters['type'] === 'return' ? 'found' : $filters['type'];

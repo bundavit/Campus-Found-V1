@@ -13,7 +13,7 @@
                 <div class="alert alert-danger mt-3 mb-0 py-2 small fw-bold">{{ $message }}</div>
             @enderror
             @if (session('error'))
-                <div class="alert alert-danger mt-3 mb-0 py-2 small fw-bold">{{ session('error') }}</div>
+                <div class="alert alert-danger mt-3 mb-0 py-2 small fw-bold" data-auto-dismiss>{{ session('error') }}</div>
             @endif
         </div>
         <form method="post" action="{{ route('admin.login.store') }}">

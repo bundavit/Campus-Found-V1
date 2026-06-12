@@ -917,6 +917,89 @@
     border-color: #ffd24a;
 }
 
+.cf-account-menu {
+    position: relative;
+}
+
+.cf-account-menu summary {
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #172033;
+    background: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 0.65rem;
+    cursor: pointer;
+    font-size: 1.25rem;
+    list-style: none;
+}
+
+.cf-account-menu summary::-webkit-details-marker {
+    display: none;
+}
+
+.cf-account-menu[open] summary,
+.cf-account-menu summary:hover {
+    background: #fff3c4;
+}
+
+.cf-account-panel {
+    position: absolute;
+    z-index: 60;
+    top: calc(100% + 0.65rem);
+    right: 0;
+    width: 230px;
+    padding: 0.5rem;
+    background: #fff;
+    border: 1px solid #d8e0eb;
+    border-radius: 0.65rem;
+    box-shadow: 0 18px 42px -18px rgba(10, 30, 55, 0.48);
+}
+
+.cf-account-panel a,
+.cf-account-panel button {
+    width: 100%;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem 0.75rem;
+    color: #172033;
+    background: transparent;
+    border: 0;
+    border-radius: 0.45rem;
+    font: inherit;
+    font-weight: 750;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.cf-account-panel a:hover,
+.cf-account-panel button:hover {
+    background: #fff3c4;
+}
+
+.cf-account-name {
+    padding: 0.55rem 0.75rem 0.7rem;
+    border-bottom: 1px solid #e4e9f0;
+    margin-bottom: 0.3rem;
+}
+
+.cf-account-name strong,
+.cf-account-name small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cf-account-name small {
+    margin-top: 0.15rem;
+    color: #657188;
+}
+
 .cf-nav-admin {
     min-height: 48px;
     padding-left: 1.1rem;
@@ -1588,6 +1671,42 @@ html[data-theme="dark"] .cf-chip:hover {
     color: #172033;
     background: var(--cf-accent);
     border-color: var(--cf-accent);
+}
+
+html[data-theme="dark"] .cf-account-menu summary {
+    color: #eaf2ff;
+    background: #254b73;
+    border-color: #416b98;
+}
+
+html[data-theme="dark"] .cf-account-menu[open] summary,
+html[data-theme="dark"] .cf-account-menu summary:hover {
+    color: #172033;
+    background: var(--cf-accent);
+}
+
+html[data-theme="dark"] .cf-account-panel {
+    background: #233852;
+    border-color: #41617f;
+}
+
+html[data-theme="dark"] .cf-account-panel a,
+html[data-theme="dark"] .cf-account-panel button {
+    color: #edf4ff;
+}
+
+html[data-theme="dark"] .cf-account-panel a:hover,
+html[data-theme="dark"] .cf-account-panel button:hover {
+    color: #172033;
+    background: var(--cf-accent);
+}
+
+html[data-theme="dark"] .cf-account-name {
+    border-color: #41617f;
+}
+
+html[data-theme="dark"] .cf-account-name small {
+    color: #b9c8da;
 }
 
 html[data-theme="dark"] .cf-filter-all.active,
@@ -2344,6 +2463,71 @@ html[data-theme="dark"] .admin-section-tabs .nav-link:not(.active):hover {
     text-align: center;
 }
 
+.cf-auth-form {
+    max-width: 620px;
+}
+
+.cf-check-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.cf-check-row input {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.cf-auth-switch {
+    margin: 0;
+    color: var(--cf-muted);
+    text-align: center;
+    font-weight: 700;
+}
+
+.cf-verification-fields {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--cf-surface-soft);
+    border: 1px solid var(--cf-border);
+    border-radius: 0.8rem;
+}
+
+.cf-verification-question {
+    margin: 0.4rem 0 0.7rem;
+    color: var(--cf-text);
+    font-weight: 750;
+}
+
+.cf-owner-actions,
+.cf-review-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+    margin-top: 1rem;
+}
+
+.cf-owner-actions form,
+.cf-owner-actions .cf-btn,
+.cf-review-actions form,
+.cf-review-actions .cf-btn {
+    width: 100%;
+}
+
+.cf-claim-proof {
+    margin-top: 1rem;
+    padding: 0.9rem;
+    background: var(--cf-bg);
+    border: 1px solid var(--cf-border);
+    border-radius: 0.75rem;
+}
+
+.cf-claim-proof p {
+    margin: 0.35rem 0 0;
+}
+
 .cf-claim-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2863,6 +3047,30 @@ html[data-theme="dark"] .admin-section-tabs .nav-link:not(.active):hover {
     .cf-nav-actions .cf-btn,
     .cf-nav-actions form {
         width: 100%;
+    }
+
+    .cf-nav-actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 44px;
+        align-items: center;
+    }
+
+    .cf-nav-report {
+        grid-column: 1;
+    }
+
+    .cf-account-menu {
+        grid-column: 2;
+    }
+
+    .cf-account-menu summary {
+        width: 44px;
+        height: 44px;
+    }
+
+    .cf-account-panel {
+        right: 0;
+        width: min(230px, calc(100vw - 3rem));
     }
 
     .cf-theme-toggle {

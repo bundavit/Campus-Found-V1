@@ -20,13 +20,37 @@
                 <a href="{{ request()->routeIs('home') ? '#how-it-works' : route('home').'#how-it-works' }}"><i class="bi bi-info-circle" aria-hidden="true"></i><span>About</span></a>
             </nav>
             <div class="cf-nav-actions">
-                <a href="{{ route('report.create') }}" class="cf-btn cf-btn-primary cf-nav-report {{ request()->routeIs('report.*') ? 'active' : '' }}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Report</a>
                 @if (session('is_admin'))
                     <a href="{{ route('admin.dashboard') }}" class="cf-btn cf-btn-outline cf-nav-admin">Dashboard</a>
                     <form method="post" action="{{ route('admin.logout') }}" class="cf-nav-logout">
                         @csrf
                         <button type="submit" class="cf-btn cf-btn-danger">Logout</button>
                     </form>
+                @else
+                    <a href="{{ route('report.create') }}" class="cf-btn cf-nav-report {{ request()->routeIs('report.*') ? 'active' : '' }}">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i><span>Report</span>
+                    </a>
+                    <details class="cf-account-menu">
+                        <summary aria-label="Open account menu" title="Account">
+                            <i class="bi bi-person-fill" aria-hidden="true"></i>
+                        </summary>
+                        <div class="cf-account-panel">
+                            @auth
+                                <div class="cf-account-name">
+                                    <strong>{{ auth()->user()->name }}</strong>
+                                    <small>{{ auth()->user()->email }}</small>
+                                </div>
+                                <a href="{{ route('claims.index') }}"><i class="bi bi-check2-circle"></i> My Claims</a>
+                                <form method="post" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"><i class="bi bi-box-arrow-right"></i> Log Out</button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}"><i class="bi bi-box-arrow-in-right"></i> Log In</a>
+                                <a href="{{ route('register') }}"><i class="bi bi-person-plus"></i> Create Account</a>
+                            @endauth
+                        </div>
+                    </details>
                 @endif
             </div>
         </div>

@@ -6,10 +6,15 @@ use App\Models\Item;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class ItemDataService
 {
+    public function __construct(private readonly ImageOptimizationService $images)
+    {
+    }
+
     public function all(): array
     {
         return $this->openItemsQuery()
@@ -112,11 +117,12 @@ class ItemDataService
             ->all();
     }
 
-    public function create(array $data, ?UploadedFile $image = null): array
+    public function create(array $data, ?UploadedFile $image = null, ?int $userId = null): array
     {
-        [$imageUrl, $imagePath] = $this->storeImage($image);
+        [$imageUrl, $imagePath] = $this->images->store($image);
 
         $item = Item::create([
+            'user_id' => $userId,
             'title' => $data['title'],
             'status' => $data['status'],
             'category' => $data['category'] ?? 'other',
@@ -124,11 +130,46 @@ class ItemDataService
             'location' => $data['location'],
             'contact_info' => $data['contact_info'],
             'description' => $data['description'] ?? '',
+            'verification_question' => $data['verification_question'] ?? null,
+            'verification_answer_hash' => filled($data['verification_answer'] ?? null)
+                ? Hash::make(mb_strtolower(trim($data['verification_answer'])))
+                : null,
+            'hidden_details' => $data['hidden_details'] ?? null,
             'image_url' => $imageUrl,
             'image_path' => $imagePath,
         ]);
 
         return $item->toLegacyArray();
+    }
+
+    public function update(Item $item, array $data, ?UploadedFile $image = null): array
+    {
+        $values = [
+            'title' => $data['title'],
+            'status' => $data['status'],
+            'category' => $data['category'],
+            'reported_at' => Carbon::parse($data['created_at']),
+            'location' => $data['location'],
+            'contact_info' => $data['contact_info'],
+            'description' => $data['description'] ?? '',
+            'verification_question' => $data['verification_question'] ?? null,
+            'hidden_details' => $data['hidden_details'] ?? null,
+        ];
+
+        if (filled($data['verification_answer'] ?? null)) {
+            $values['verification_answer_hash'] = Hash::make(mb_strtolower(trim($data['verification_answer'])));
+        }
+
+        if ($image) {
+            [$values['image_url'], $values['image_path']] = $this->images->store($image);
+            if ($item->image_path) {
+                Storage::disk('public')->delete($item->image_path);
+            }
+        }
+
+        $item->update($values);
+
+        return $item->fresh()->toLegacyArray();
     }
 
     public function delete(string $id): bool
@@ -147,22 +188,11 @@ class ItemDataService
         return true;
     }
 
-    /**
-     * @return array{0: string, 1: string}
-     */
-    private function storeImage(?UploadedFile $image): array
-    {
-        if (! $image) {
-            return ['', ''];
-        }
-
-        $path = $image->store('items', 'public');
-
-        return ['/storage/'.$path, $path];
-    }
-
     private function openItemsQuery()
     {
-        return Item::query()->whereDoesntHave('claims');
+        return Item::query()->whereDoesntHave(
+            'claims',
+            fn ($query) => $query->where('status', 'approved')
+        );
     }
 }
