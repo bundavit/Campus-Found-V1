@@ -30,10 +30,15 @@ class ClaimController extends Controller
             'claimant_name' => ['nullable', 'string', 'max:255'],
             'contact_info' => ['required', 'string', 'max:255'],
             'message' => ['nullable', 'string', 'max:1000'],
+            'verification_answer' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $item = Item::findOrFail($validated['item_id']);
-        $claim = $claims->create($item, $validated);
+        if ($item->status === 'found' && $item->verification_question && blank($validated['verification_answer'] ?? null)) {
+            return response()->json(['message' => 'Verification answer is required.'], 422);
+        }
+
+        $claim = $claims->create($item, $validated, $request->user()->id);
 
         return response()->json([
             'message' => $item->status === 'found'
@@ -51,6 +56,13 @@ class ClaimController extends Controller
             return response()->json(['error' => 'Claim not found'], 404);
         }
 
+        $userId = request()->user()?->id;
+        abort_unless(
+            $claim->status === 'approved'
+            || ($userId && ((int) $claim->user_id === (int) $userId || (int) $claim->item?->user_id === (int) $userId)),
+            403
+        );
+
         return response()->json(['data' => $claim->toDisplayArray()]);
     }
 
@@ -66,16 +78,31 @@ class ClaimController extends Controller
             return response()->json(['error' => 'Claim not found'], 404);
         }
 
-        $claim->update(['status' => $validated['status']]);
+        $canReview = $claim->item && (int) $claim->item->user_id === (int) $request->user()->id;
+        abort_unless($canReview, 403);
+
+        $claims = app(ClaimDataService::class);
+        $data = $claims->review($claim, $validated['status'], $request->user()->id);
 
         return response()->json([
             'message' => 'Claim status updated successfully',
-            'data' => $claim->fresh('item')->toDisplayArray(),
+            'data' => $data,
         ]);
     }
 
-    public function destroy(string $id, ClaimDataService $claims)
+    public function destroy(Request $request, string $id, ClaimDataService $claims)
     {
+        $claim = ItemClaim::with('item')->find($id);
+
+        if (! $claim) {
+            return response()->json(['error' => 'Claim not found'], 404);
+        }
+
+        $userId = (int) $request->user()->id;
+        $canDelete = (int) $claim->user_id === $userId
+            || (int) $claim->item?->user_id === $userId;
+        abort_unless($canDelete, 403);
+
         if (! $claims->delete($id)) {
             return response()->json(['error' => 'Claim not found'], 404);
         }

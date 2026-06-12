@@ -15,7 +15,7 @@
     <section class="cf-board-hero">
         <div class="cf-container">
             <h1>Claims</h1>
-            <p>Track submitted claim and found reports.</p>
+            <p>Track submitted claims and found-item reports.</p>
         </div>
     </section>
 
@@ -32,7 +32,7 @@
 
         <div class="cf-claims-filter-bar">
             <div class="cf-filter-row" aria-label="Claim request type filters">
-                @foreach(['all' => 'All', 'return' => 'Return', 'claim' => 'Claim'] as $value => $label)
+                @foreach(['all' => 'All', 'return' => 'Found Reports', 'claim' => 'Claims'] as $value => $label)
                     <a href="{{ route('claims.index', $claimsQuery(['type' => $value === 'all' ? null : $value])) }}"
                        class="cf-filter-pill cf-filter-{{ $value }} {{ $filter === $value ? 'active' : '' }}">{{ $label }}</a>
                 @endforeach
@@ -64,8 +64,22 @@
                     </div>
                     <h3>{{ $claim['item']['title'] ?? 'Unknown item' }}</h3>
                     <p><span>Claimant</span>{{ $claim['claimant_name'] }}</p>
-                    <p><span>Contact</span>{{ $claim['contact_info'] }}</p>
+                    @if($claim['status'] === 'approved' || !empty($claim['can_review']) || (auth()->check() && (int) auth()->id() === (int) ($claim['user_id'] ?? 0)))
+                        <p><span>Contact</span>{{ $claim['contact_info'] }}</p>
+                    @endif
                     <div class="cf-message-preview">{{ $claim['message'] ?: 'No message provided.' }}</div>
+                    <span class="cf-request-badge cf-request-{{ $claim['status_class'] }}">{{ $claim['status_label'] }}</span>
+
+                    @if(!empty($claim['can_review']) && $claim['status'] === 'pending')
+                        <div class="cf-claim-proof">
+                            <strong>Verification answer</strong>
+                            <p>{{ $claim['verification_answer'] ?: 'No answer provided.' }}</p>
+                        </div>
+                        <div class="cf-review-actions">
+                            <form method="post" action="{{ route('claims.review', $claim['id']) }}">@csrf @method('PATCH')<input type="hidden" name="status" value="approved"><button class="cf-btn cf-btn-success" type="submit">Approve</button></form>
+                            <form method="post" action="{{ route('claims.review', $claim['id']) }}">@csrf @method('PATCH')<input type="hidden" name="status" value="rejected"><button class="cf-btn cf-btn-danger" type="submit">Reject</button></form>
+                        </div>
+                    @endif
 
                     @if($claimItem)
                         <button type="button" class="cf-btn cf-btn-outline w-100 mt-3" data-bs-toggle="modal" data-bs-target="#{{ $modalId }}">
