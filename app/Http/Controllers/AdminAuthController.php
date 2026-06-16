@@ -21,7 +21,9 @@ class AdminAuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if ($request->password !== config('lostfound.admin_password')) {
+        $adminPassword = config('lostfound.admin_password');
+
+        if (! is_string($adminPassword) || $adminPassword === '' || ! hash_equals($adminPassword, $request->password)) {
             return back()->withErrors(['password' => 'Access Denied: Invalid Admin Key']);
         }
 

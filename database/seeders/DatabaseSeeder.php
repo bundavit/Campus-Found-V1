@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Lost Found Admin',
                 'password' => Hash::make('password'),
+                'role' => 'super_admin',
+                'status' => 'active',
             ]
         );
 

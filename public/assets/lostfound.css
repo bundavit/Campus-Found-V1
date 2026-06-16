@@ -2486,6 +2486,246 @@ html[data-theme="dark"] .admin-section-tabs .nav-link:not(.active):hover {
     font-weight: 700;
 }
 
+.cf-account-shell {
+    padding-top: 2rem;
+    padding-bottom: 5rem;
+}
+
+.cf-account-tabs {
+    position: sticky;
+    z-index: 20;
+    top: 0.75rem;
+    display: flex;
+    gap: 0.4rem;
+    width: fit-content;
+    margin: 0 auto 2rem;
+    padding: 0.4rem;
+    background: var(--cf-surface);
+    border: 1px solid var(--cf-border);
+    border-radius: 0.65rem;
+    box-shadow: var(--cf-shadow);
+}
+
+.cf-account-tabs a {
+    padding: 0.65rem 1rem;
+    color: var(--cf-primary);
+    border-radius: 0.45rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.cf-account-tabs a:hover {
+    color: #172033;
+    background: var(--cf-accent);
+}
+
+.cf-account-section {
+    scroll-margin-top: 6rem;
+    margin-bottom: 3rem;
+}
+
+.cf-account-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.cf-account-stats > div {
+    min-height: 145px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    padding: 1.25rem;
+    color: var(--cf-text);
+    background: var(--cf-surface);
+    border: 1px solid var(--cf-border);
+    border-radius: 0.5rem;
+    box-shadow: var(--cf-shadow);
+}
+
+.cf-account-stats i {
+    color: var(--cf-primary);
+    font-size: 1.35rem;
+}
+
+.cf-account-stats strong {
+    margin: 0.25rem 0;
+    font-size: 2rem;
+}
+
+.cf-account-stats span {
+    color: var(--cf-muted);
+    font-weight: 750;
+}
+
+.cf-account-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.cf-account-heading h2,
+.cf-account-heading p {
+    margin: 0;
+}
+
+.cf-account-heading h2 {
+    color: var(--cf-text);
+    font-size: 1.65rem;
+}
+
+.cf-account-heading p {
+    margin-top: 0.3rem;
+    color: var(--cf-muted);
+    font-weight: 650;
+}
+
+.cf-account-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.cf-account-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem;
+    color: var(--cf-text);
+    background: var(--cf-surface);
+    border: 1px solid var(--cf-border);
+    border-radius: 0.5rem;
+}
+
+.cf-account-row-main {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cf-account-row-main h3,
+.cf-account-row-main p {
+    margin: 0;
+}
+
+.cf-account-row-main h3 {
+    font-size: 1.05rem;
+}
+
+.cf-account-row-main p,
+.cf-account-message,
+.cf-account-row-meta {
+    color: var(--cf-muted);
+    font-size: 0.88rem;
+    font-weight: 650;
+}
+
+.cf-account-row-meta {
+    display: grid;
+    gap: 0.2rem;
+    text-align: right;
+}
+
+.cf-account-row-meta strong {
+    color: #b77900;
+}
+
+.cf-account-row-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.cf-account-row-actions .cf-btn {
+    min-height: 38px;
+    padding: 0.45rem 0.75rem;
+}
+
+.cf-account-settings {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.cf-account-settings .cf-page-form {
+    width: 100%;
+    margin: 0;
+}
+
+.cf-account-settings h3 {
+    margin: 0 0 0.25rem;
+    color: var(--cf-text);
+}
+
+html[data-theme="dark"] .cf-account-tabs,
+html[data-theme="dark"] .cf-account-stats > div,
+html[data-theme="dark"] .cf-account-row {
+    background: var(--cf-surface);
+    border-color: var(--cf-border);
+}
+
+@media (max-width: 900px) {
+    .cf-account-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cf-account-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .cf-account-row-actions {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 640px) {
+    .cf-account-shell {
+        padding-top: 1.25rem;
+    }
+
+    .cf-account-tabs {
+        position: static;
+        width: 100%;
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+
+    .cf-account-tabs a {
+        flex: 0 0 auto;
+    }
+
+    .cf-account-stats,
+    .cf-account-settings {
+        grid-template-columns: 1fr;
+    }
+
+    .cf-account-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .cf-account-heading .cf-btn {
+        width: 100%;
+    }
+
+    .cf-account-row {
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+
+    .cf-account-row-meta {
+        text-align: left;
+    }
+
+    .cf-account-row-actions,
+    .cf-account-row-actions form,
+    .cf-account-row-actions .cf-btn {
+        width: 100%;
+    }
+}
+
 .cf-verification-fields {
     display: grid;
     gap: 1rem;
@@ -3401,4 +3641,53 @@ html[data-theme="dark"] .admin-section-tabs .nav-link:not(.active):hover {
     .cf-steps::before {
         display: none;
     }
+}
+.cf-claim-proof-image {
+    display: block;
+    width: min(100%, 22rem);
+    max-height: 16rem;
+    margin-top: 0.75rem;
+    border: 1px solid var(--cf-border, #d6e1ec);
+    border-radius: 0.5rem;
+    object-fit: contain;
+    background: #fff;
+}
+
+.cf-history-filter {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.cf-history-filter label {
+    display: grid;
+    gap: 0.35rem;
+    color: var(--cf-muted, #607089);
+    font-weight: 700;
+}
+
+.cf-history-filter select,
+.cf-dispute-form textarea {
+    min-width: 13rem;
+    border: 1px solid var(--cf-border, #d6e1ec);
+    border-radius: 0.5rem;
+    padding: 0.7rem;
+    background: var(--cf-surface, #fff);
+    color: inherit;
+}
+
+.cf-dispute-form {
+    margin-top: 0.75rem;
+}
+
+.cf-dispute-form summary {
+    cursor: pointer;
+    color: #20578c;
+    font-weight: 700;
+}
+
+.cf-dispute-form form {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
 }

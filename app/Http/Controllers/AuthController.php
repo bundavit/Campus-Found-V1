@@ -53,6 +53,13 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        if ($request->user()->status === 'suspended') {
+            Auth::logout();
+            $request->session()->invalidate();
+
+            return back()->withErrors(['email' => 'This account is suspended.'])->onlyInput('email');
+        }
+
         return redirect()->intended(route('home'))->with('success', 'Welcome back.');
     }
 

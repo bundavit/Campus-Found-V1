@@ -3,7 +3,7 @@
 @php
     $isFound = $item['status'] === 'found';
     $successMessage = $isFound
-        ? 'Claim submitted for verification. The reporter will review your answer.'
+        ? 'Claim submitted. The reporter will review your private proof.'
         : 'Found-item report submitted. The owner will review it.';
 @endphp
 
@@ -74,7 +74,7 @@
                     </div>
 
                     <div class="collapse" id="claim-form-{{ $id }}">
-                        <form method="post" action="{{ route('claims.store') }}" class="cf-modal-form" data-cf-claim-form data-success-message="{{ $successMessage }}">
+                        <form method="post" action="{{ route('claims.store') }}" class="cf-modal-form" enctype="multipart/form-data" data-cf-claim-form data-success-message="{{ $successMessage }}">
                             @csrf
                             <input type="hidden" name="item_id" value="{{ $item['id'] }}">
                             <input type="hidden" name="modal_flow" value="1">
@@ -82,21 +82,28 @@
                                 <span>Name <small>optional</small></span>
                                 <input type="text" name="claimant_name" placeholder="Your name">
                             </label>
-                            @if($isFound && !empty($item['verification_question']))
+                            @if($isFound)
                                 <label>
-                                    <span>Ownership Question <strong>*</strong></span>
-                                    <p class="cf-verification-question">{{ $item['verification_question'] }}</p>
-                                    <textarea name="verification_answer" rows="2" placeholder="Your private answer" required></textarea>
+                                    <span>How can you prove this is yours? <strong>*</strong></span>
+                                    <textarea name="ownership_proof" rows="3" placeholder="Describe a private detail, such as a scratch, contents, serial number, or lock-screen image." required></textarea>
+                                    <small class="cf-field-help">Only the reporter and administrators can review this proof.</small>
+                                </label>
+                                <label>
+                                    <span>Proof Photo <small>optional</small></span>
+                                    <input type="file" name="proof_image" accept="image/jpeg,image/png,image/webp">
+                                    <small class="cf-field-help">Upload a receipt or another supporting image. Maximum 5 MB.</small>
                                 </label>
                             @endif
                             <label>
-                                <span>Your Contact <strong>*</strong></span>
-                                <input type="text" name="contact_info" placeholder="Phone or Telegram" required>
+                                <span>Contact Method <strong>*</strong></span>
+                                <input type="text" name="contact_info" placeholder="Phone number, email, or Telegram" required>
                             </label>
-                            <label>
-                                <span>{{ $isFound ? 'Message/proof' : 'Message/location found' }} <small>optional</small></span>
-                                <textarea name="message" rows="3" placeholder="{{ $isFound ? 'Describe how you can prove ownership...' : 'Where/when you found it...' }}"></textarea>
-                            </label>
+                            @unless($isFound)
+                                <label>
+                                    <span>Where and when did you find it? <strong>*</strong></span>
+                                    <textarea name="ownership_proof" rows="3" placeholder="Share the location, date, and how the owner can identify it." required></textarea>
+                                </label>
+                            @endunless
                             <button type="submit" class="cf-btn cf-btn-primary">
                                 {{ $isFound ? 'Submit Claim' : 'Submit Found Report' }}
                             </button>

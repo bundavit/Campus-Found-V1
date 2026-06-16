@@ -30,15 +30,35 @@ class ClaimController extends Controller
             'claimant_name' => ['nullable', 'string', 'max:255'],
             'contact_info' => ['required', 'string', 'max:255'],
             'message' => ['nullable', 'string', 'max:1000'],
+            'ownership_proof' => ['nullable', 'string', 'max:1000'],
             'verification_answer' => ['nullable', 'string', 'max:1000'],
+            'proof_image' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
         ]);
 
         $item = Item::findOrFail($validated['item_id']);
-        if ($item->status === 'found' && $item->verification_question && blank($validated['verification_answer'] ?? null)) {
-            return response()->json(['message' => 'Verification answer is required.'], 422);
+        if ((int) $item->user_id === (int) $request->user()->id) {
+            return response()->json(['message' => 'You cannot claim your own report.'], 422);
         }
 
-        $claim = $claims->create($item, $validated, $request->user()->id);
+        if (ItemClaim::query()
+            ->where('item_id', $item->id)
+            ->where('user_id', $request->user()->id)
+            ->whereIn('status', ['pending', 'approved'])
+            ->exists()) {
+            return response()->json(['message' => 'You already submitted a claim for this item.'], 422);
+        }
+
+        $ownershipProof = $validated['ownership_proof']
+            ?? $validated['message']
+            ?? $validated['verification_answer']
+            ?? null;
+
+        if ($item->status === 'found' && blank($ownershipProof)) {
+            return response()->json(['message' => 'Ownership proof is required.'], 422);
+        }
+
+        $validated['ownership_proof'] = $ownershipProof;
+        $claim = $claims->create($item, $validated, $request->user()->id, $request->file('proof_image'));
 
         return response()->json([
             'message' => $item->status === 'found'
@@ -58,8 +78,10 @@ class ClaimController extends Controller
 
         $userId = request()->user()?->id;
         abort_unless(
-            $claim->status === 'approved'
-            || ($userId && ((int) $claim->user_id === (int) $userId || (int) $claim->item?->user_id === (int) $userId)),
+            $userId && (
+                (int) $claim->user_id === (int) $userId
+                || (int) $claim->item?->user_id === (int) $userId
+            ),
             403
         );
 

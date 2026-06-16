@@ -4,12 +4,30 @@ namespace App\Services;
 
 use App\Models\Item;
 use App\Models\ItemClaim;
+use App\Notifications\ClaimReviewedNotification;
+use App\Notifications\ClaimSubmittedNotification;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class ClaimDataService
 {
-    public function create(Item $item, array $data, ?int $userId = null): array
+    public function __construct(private readonly ImageOptimizationService $images)
+    {
+    }
+
+    public function create(
+        Item $item,
+        array $data,
+        ?int $userId = null,
+        ?UploadedFile $proofImage = null
+    ): array
     {
         $type = $item->status === 'found' ? 'claim' : 'found';
+        [, $proofImagePath] = $this->images->store($proofImage, 'claim-proofs');
+        $ownershipProof = $data['ownership_proof']
+            ?? $data['message']
+            ?? $data['verification_answer']
+            ?? null;
 
         $claim = ItemClaim::create([
             'item_id' => $item->id,
@@ -18,24 +36,29 @@ class ClaimDataService
             'status' => 'pending',
             'claimant_name' => $data['claimant_name'] ?? null,
             'contact_info' => $data['contact_info'],
-            'message' => $data['message'] ?? null,
-            'verification_answer' => $data['verification_answer'] ?? null,
+            'message' => $ownershipProof,
+            'verification_answer' => null,
+            'proof_image_path' => $proofImagePath ?: null,
         ]);
 
         $claim->load('item');
+        $claim->item?->user?->notify(new ClaimSubmittedNotification($claim));
 
         return $claim->toDisplayArray();
     }
 
-    public function review(ItemClaim $claim, string $status, int $reviewerId): array
+    public function review(ItemClaim $claim, string $status, ?int $reviewerId): array
     {
         $claim->update([
             'status' => $status,
             'reviewed_at' => now(),
-            'reviewed_by' => $reviewerId,
+            'reviewed_by' => $reviewerId ?: null,
         ]);
 
-        return $claim->fresh('item')->toDisplayArray();
+        $claim = $claim->fresh(['item', 'user']);
+        $claim->user?->notify(new ClaimReviewedNotification($claim));
+
+        return $claim->toDisplayArray();
     }
 
     public function recent(int $limit = 4): array
@@ -110,6 +133,10 @@ class ClaimDataService
         $claim = ItemClaim::find($id);
         if (! $claim) {
             return false;
+        }
+
+        if ($claim->proof_image_path) {
+            Storage::disk('public')->delete($claim->proof_image_path);
         }
 
         $claim->delete();

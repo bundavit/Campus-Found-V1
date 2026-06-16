@@ -1,52 +1,75 @@
-# Lost & Found (RUPP)
+# Campus Found
 
-Laravel + Blade + MySQL + Sanctum API. React version archived in `legacy-react/`.
+Responsive lost-and-found website built with Laravel, Blade, MySQL, and Sanctum.
 
-## MySQL
-
-**Automatic setup (recommended):**
+## Local setup
 
 ```bash
-php artisan lostfound:setup-mysql
-php artisan lostfound:check-db
-```
-
-Uses database `contactappdb` and lab user `laravel` / `Rupp2357.!` (same as Labs 7–12).
-
-**Optional — use Workbench database `LostFoundDB` with password `2103#Davit`:**
-
-1. Run `database/grant-laravel.sql` in Workbench as **root**.
-2. Update `.env`: `DB_DATABASE=LostFoundDB` and `DB_PASSWORD="2103#Davit"` (quotes required).
-3. Run `php artisan migrate:fresh --seed`.
-
-## Web app
-
-```bash
+composer install
+copy .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan storage:link
 php artisan serve
 ```
 
-- Home: `http://127.0.0.1:8000`
-- Admin UI: `/admin/login` — password `RUPPSTAFF`
+Configure your own MySQL database and credentials in `.env` before migrating.
 
-## Postman API
+## Required PHP extensions
 
-Import: `postman/LostFound_API.postman_collection.json`
+- PDO MySQL
+- GD
+- Fileinfo
+- OpenSSL
+- Mbstring
 
-| Variable | Default |
-|----------|---------|
-| `base_url` | `http://127.0.0.1:8000/api` |
-| `email` | `admin@rupp.edu.kh` |
-| `password` | `password` |
+## Main features
 
-**Flow:** Run **Login** first (saves `token`) → **List Items** / **Report Item** → **Delete Item** needs Bearer token.
+- User registration, login, and logout
+- User-owned lost and found reports
+- Report editing and deletion
+- Optimized WebP image uploads
+- Ownership verification questions
+- Pending claim review and approval
+- Administrative report and claim management
+- Sanctum API and Postman collection
 
-### API routes
+## URLs
 
-| Method | URL | Auth |
-|--------|-----|------|
-| POST | `/api/login` | — |
-| POST | `/api/register` | — |
-| GET | `/api/items` | — |
-| POST | `/api/items` | — |
-| GET | `/api/items/{id}` | — |
-| DELETE | `/api/items/{id}` | Sanctum Bearer |
+- Website: `http://127.0.0.1:8000`
+- Admin login: `http://127.0.0.1:8000/admin/login`
+- API base URL: `http://127.0.0.1:8000/api`
+
+Set `LOSTFOUND_ADMIN_PASSWORD` in `.env` before using the admin panel.
+
+## Testing
+
+```bash
+php artisan test
+composer audit --locked
+vendor/bin/pint --test
+```
+
+## Postman
+
+Import `postman/LostFound_API.postman_collection.json`.
+
+The collection uses separate owner and claimant tokens:
+
+1. Log in as the report owner.
+2. Create a report.
+3. Register or log in as a claimant.
+4. Submit a claim.
+5. Approve or reject the claim with the owner token.
+
+## Production checklist
+
+- Set `APP_ENV=production`.
+- Set `APP_DEBUG=false`.
+- Set the public HTTPS `APP_URL`.
+- Generate a production `APP_KEY`.
+- Use unique database and admin passwords.
+- Run `php artisan migrate --force`.
+- Run `php artisan storage:link`.
+- Run `php artisan optimize`.
+- Configure persistent storage or object storage for uploaded images.

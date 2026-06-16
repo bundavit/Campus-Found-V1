@@ -9,7 +9,7 @@ use RuntimeException;
 
 class ImageOptimizationService
 {
-    public function store(?UploadedFile $image): array
+    public function store(?UploadedFile $image, string $directory = 'items'): array
     {
         if (! $image) {
             return ['', ''];
@@ -43,7 +43,7 @@ class ImageOptimizationService
         imagedestroy($source);
         imagedestroy($target);
 
-        $path = 'items/'.Str::uuid().'.webp';
+        $path = trim($directory, '/').'/'.Str::uuid().'.webp';
         Storage::disk('public')->put($path, $contents);
 
         return ['/storage/'.$path, $path];

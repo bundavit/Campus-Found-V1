@@ -66,23 +66,6 @@
                 <small class="cf-field-help">Mention color, name, ticket detail, card type, sticker, or anything unique.</small>
             </label>
 
-            <div class="cf-verification-fields">
-                <label>
-                    <span>Ownership Verification Question</span>
-                    <input type="text" name="verification_question" value="{{ $value('verification_question') }}" placeholder="Example: What image is on the lock screen?">
-                    <small class="cf-field-help">Required for found items. Ask something only the owner should know.</small>
-                    @error('verification_question')<small class="cf-error">{{ $message }}</small>@enderror
-                </label>
-                <label>
-                    <span>Private Answer {{ $editing ? '(leave blank to keep current answer)' : '' }}</span>
-                    <input type="text" name="verification_answer" value="" placeholder="This answer is stored securely">
-                </label>
-                <label>
-                    <span>Hidden Identifying Details <small>optional</small></span>
-                    <textarea name="hidden_details" rows="3" placeholder="Details not shown publicly, used when reviewing claims">{{ $value('hidden_details') }}</textarea>
-                </label>
-            </div>
-
             <label>
                 <span>Attach Photo</span>
                 <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp">

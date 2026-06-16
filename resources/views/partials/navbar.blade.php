@@ -40,7 +40,9 @@
                                     <strong>{{ auth()->user()->name }}</strong>
                                     <small>{{ auth()->user()->email }}</small>
                                 </div>
-                                <a href="{{ route('claims.index') }}"><i class="bi bi-check2-circle"></i> My Claims</a>
+                                <a href="{{ route('account.show') }}"><i class="bi bi-speedometer2"></i> My Dashboard</a>
+                                <a href="{{ route('account.show') }}#my-reports"><i class="bi bi-card-list"></i> My Reports</a>
+                                <a href="{{ route('account.show') }}#my-claims"><i class="bi bi-check2-circle"></i> My Claims</a>
                                 <form method="post" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit"><i class="bi bi-box-arrow-right"></i> Log Out</button>

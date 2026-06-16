@@ -49,8 +49,8 @@
                 </div>
                 <div class="col-6 col-lg">
                     <div class="card border-0 shadow-sm admin-stat-card bg-warning text-dark p-3">
-                        <small class="text-uppercase opacity-75">Pending Review</small>
-                        <h4 class="fw-bold m-0">{{ $pendingClaims }}</h4>
+                        <small class="text-uppercase opacity-75">Pending / Disputed</small>
+                        <h4 class="fw-bold m-0">{{ $pendingClaims }} / {{ $openDisputes }}</h4>
                     </div>
                 </div>
             </div>
@@ -68,13 +68,26 @@
                         Claims ({{ $totalClaims }})
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $section === 'users' ? 'active' : '' }}"
+                       href="{{ route('admin.dashboard', ['section' => 'users']) }}">
+                        Users ({{ $totalUsers }})
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $section === 'audit' ? 'active' : '' }}"
+                       href="{{ route('admin.dashboard', ['section' => 'audit']) }}">
+                        Audit Log
+                    </a>
+                </li>
             </ul>
 
+            @if(in_array($section, ['items', 'claims', 'users'], true))
             <form method="get" action="{{ route('admin.dashboard') }}" class="card border-0 shadow-sm mb-3 rounded-4">
                 <input type="hidden" name="section" value="{{ $section }}">
                 @if($section === 'claims')
                     <input type="hidden" name="claim_status" value="{{ $claimFilter }}">
-                @else
+                @elseif($section === 'items')
                     <input type="hidden" name="status" value="{{ $status }}">
                 @endif
                 <div class="card-body d-flex flex-wrap gap-2 align-items-center p-3">
@@ -82,12 +95,14 @@
                            class="form-control flex-grow-1 border bg-white py-2"
                            style="min-width: 160px; font-size: 0.875rem;"
                            placeholder="Search...">
+                    @if(in_array($section, ['items', 'claims'], true))
                     <select name="category" class="form-select border bg-white py-2" style="width: auto; min-width: 180px; font-size: 0.875rem;" onchange="this.form.submit()">
                         <option value="all" @selected($category === 'all')>All categories</option>
                         @foreach($categories as $slug => $label)
                             <option value="{{ $slug }}" @selected($category === $slug)>{{ $label }}</option>
                         @endforeach
                     </select>
+                    @endif
                     <select name="sort" class="form-select border bg-white py-2" style="width: auto; font-size: 0.875rem;" onchange="this.form.submit()">
                         <option value="desc" @selected($sort === 'desc')>Newest first</option>
                         <option value="asc" @selected($sort === 'asc')>Oldest first</option>
@@ -103,8 +118,61 @@
                     <button type="submit" class="btn btn-primary btn-sm fw-bold rounded-pill px-3">Apply</button>
                 </div>
             </form>
+            @endif
 
-            @if($section === 'claims')
+            @if($section === 'users')
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-dark"><tr><th class="ps-3">User</th><th>Student ID</th><th>Joined</th><th>Access</th><th class="text-end pe-3">Update</th></tr></thead>
+                            <tbody>
+                            @forelse($users as $user)
+                                <tr>
+                                    <td class="ps-3"><strong>{{ $user->name }}</strong><br><small>{{ $user->email }}</small></td>
+                                    <td>{{ $user->student_id ?: '-' }}</td>
+                                    <td>{{ $user->created_at->toFormattedDateString() }}</td>
+                                    <td><span class="badge {{ $user->status === 'active' ? 'bg-success' : 'bg-danger' }}">{{ ucfirst($user->status) }}</span> <span class="badge bg-primary">{{ str_replace('_', ' ', ucfirst($user->role)) }}</span></td>
+                                    <td class="text-end pe-3">
+                                        <form method="post" action="{{ route('admin.users.update', $user) }}" class="d-flex justify-content-end gap-2">
+                                            @csrf @method('PATCH')
+                                            <select name="role" class="form-select form-select-sm" style="max-width: 130px">
+                                                @foreach(['user' => 'User', 'admin' => 'Admin', 'super_admin' => 'Super Admin'] as $value => $label)
+                                                    <option value="{{ $value }}" @selected($user->role === $value)>{{ $label }}</option>
+                                                @endforeach
+                                            </select>
+                                            <select name="status" class="form-select form-select-sm" style="max-width: 120px">
+                                                <option value="active" @selected($user->status === 'active')>Active</option>
+                                                <option value="suspended" @selected($user->status === 'suspended')>Suspended</option>
+                                            </select>
+                                            <button class="btn btn-sm btn-primary">Save</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="5" class="text-center py-4">No users found.</td></tr>
+                            @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mt-3">{{ $users->withQueryString()->links() }}</div>
+            @elseif($section === 'audit')
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-dark"><tr><th class="ps-3">Time</th><th>Actor</th><th>Action</th><th>Subject</th><th>Details</th></tr></thead>
+                            <tbody>
+                            @forelse($auditLogs as $log)
+                                <tr><td class="ps-3">{{ $log->created_at->format('M j, Y H:i') }}</td><td>{{ $log->actor }}</td><td><strong>{{ $log->action }}</strong></td><td>{{ $log->subject_type }} #{{ $log->subject_id }}</td><td>{{ $log->details ?: '-' }}</td></tr>
+                            @empty
+                                <tr><td colspan="5" class="text-center py-4">No administrative activity yet.</td></tr>
+                            @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mt-3">{{ $auditLogs->withQueryString()->links() }}</div>
+            @elseif($section === 'claims')
                 @php
                     $adminClaimsQuery = fn (array $overrides = []) => array_filter(array_merge([
                         'section' => 'claims',
@@ -151,6 +219,9 @@
                                             <span class="badge rounded-pill {{ $claim['status'] === 'approved' ? 'bg-success' : ($claim['status'] === 'rejected' ? 'bg-danger' : 'bg-warning text-dark') }}">
                                                 {{ $claim['status_label'] }}
                                             </span>
+                                            @if($claim['dispute_status'] === 'open')
+                                                <span class="badge rounded-pill bg-danger">Disputed</span>
+                                            @endif
                                         </td>
                                         <td>
                                             <div class="fw-bold text-primary">{{ $claim['item']['title'] ?? '-' }}</div>
@@ -183,6 +254,20 @@
                                                     @method('PATCH')
                                                     <input type="hidden" name="status" value="rejected">
                                                     <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill me-1">Reject</button>
+                                                </form>
+                                            @endif
+                                            @if($claim['dispute_status'] === 'open')
+                                                <form method="post" action="{{ route('admin.claims.dispute', $claim['id']) }}" class="d-inline">
+                                                    @csrf @method('PATCH')
+                                                    <input type="hidden" name="dispute_status" value="resolved">
+                                                    <input type="hidden" name="status" value="pending">
+                                                    <button type="submit" class="btn btn-sm btn-warning rounded-pill me-1">Reopen</button>
+                                                </form>
+                                                <form method="post" action="{{ route('admin.claims.dispute', $claim['id']) }}" class="d-inline">
+                                                    @csrf @method('PATCH')
+                                                    <input type="hidden" name="dispute_status" value="dismissed">
+                                                    <input type="hidden" name="status" value="{{ $claim['status'] }}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary rounded-pill me-1">Dismiss</button>
                                                 </form>
                                             @endif
                                             <form method="post" action="{{ route('admin.claims.destroy', $claim['id']) }}" class="d-inline"
@@ -245,6 +330,9 @@
                                             <span class="badge rounded-pill {{ $item['status'] === 'lost' ? 'bg-danger' : 'bg-success' }}">
                                                 {{ strtoupper($item['status']) }}
                                             </span>
+                                            @if(($item['moderation_status'] ?? 'active') === 'hidden')
+                                                <span class="badge rounded-pill bg-dark">HIDDEN</span>
+                                            @endif
                                         </td>
                                         <td class="d-none d-md-table-cell">
                                             <span class="badge bg-light text-dark border">{{ $item['category_label'] ?? 'Other' }}</span>
@@ -258,6 +346,21 @@
                                                     data-bs-toggle="modal" data-bs-target="#admin-item-{{ $item['id'] }}">
                                                 View
                                             </button>
+                                            @if(($item['moderation_status'] ?? 'active') === 'active')
+                                                <form method="post" action="{{ route('admin.items.moderate', $item['id']) }}" class="d-inline"
+                                                      onsubmit="this.querySelector('[name=reason]').value = prompt('Reason for hiding this report:') || ''; return this.querySelector('[name=reason]').value !== '';">
+                                                    @csrf @method('PATCH')
+                                                    <input type="hidden" name="moderation_status" value="hidden">
+                                                    <input type="hidden" name="reason" value="">
+                                                    <button type="submit" class="btn btn-sm btn-outline-warning rounded-pill">Hide</button>
+                                                </form>
+                                            @else
+                                                <form method="post" action="{{ route('admin.items.moderate', $item['id']) }}" class="d-inline">
+                                                    @csrf @method('PATCH')
+                                                    <input type="hidden" name="moderation_status" value="active">
+                                                    <button type="submit" class="btn btn-sm btn-success rounded-pill">Restore</button>
+                                                </form>
+                                            @endif
                                             <form method="post" action="{{ route('admin.items.destroy', $item['id']) }}" class="d-inline"
                                                   onsubmit="return confirm('Delete this report?')">
                                                 @csrf
@@ -337,11 +440,13 @@
                                 <p class="small fw-bold mb-1">Requester: {{ $claim['claimant_name'] }}</p>
                                 <p class="small fw-bold mb-2">Requester contact: {{ $claim['contact_info'] }}</p>
                                 <p class="small fw-bold mb-1">Review status: {{ $claim['status_label'] }}</p>
-                                @if(!empty($claim['verification_answer']))
-                                    <p class="small fw-bold mb-1">Verification answer</p>
-                                    <p class="bg-warning-subtle p-2 rounded-3 border small mb-2">{{ $claim['verification_answer'] }}</p>
+                                <p class="small fw-bold mb-1">Private ownership proof</p>
+                                <p class="bg-warning-subtle p-2 rounded-3 border small mb-2">{{ $claim['ownership_proof'] ?: 'No proof provided.' }}</p>
+                                @if(!empty($claim['proof_image_url']))
+                                    <a href="{{ $claim['proof_image_url'] }}" target="_blank" rel="noopener">
+                                        <img src="{{ $claim['proof_image_url'] }}" alt="Claim proof" class="img-fluid rounded-3 border mb-2">
+                                    </a>
                                 @endif
-                                <p class="bg-light p-2 rounded-3 border small mb-0">{{ $claim['message'] ?: 'No message provided.' }}</p>
                             </div>
                         </div>
                     </div>

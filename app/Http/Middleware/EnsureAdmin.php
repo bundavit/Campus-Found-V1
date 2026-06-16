@@ -10,7 +10,12 @@ class EnsureAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->session()->get('is_admin') !== true) {
+        $isStaffSession = $request->session()->get('is_admin') === true;
+        $user = auth()->user();
+        $isAdminUser = $user?->isAdmin() === true
+            && $user?->status === 'active';
+
+        if (! $isStaffSession && ! $isAdminUser) {
             return redirect()
                 ->route('admin.login')
                 ->with('error', 'Please log in as admin first.');

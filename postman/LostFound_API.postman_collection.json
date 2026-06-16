@@ -236,7 +236,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Blue Umbrella\",\n  \"status\": \"found\",\n  \"category\": \"bottle_umbrella\",\n  \"created_at\": \"2026-05-29T12:00:00\",\n  \"location\": \"Building A, 2nd floor\",\n  \"contact_info\": \"telegram @student\",\n  \"description\": \"Foldable umbrella with campus sticker\",\n  \"verification_question\": \"What color is the handle?\",\n  \"verification_answer\": \"black\",\n  \"hidden_details\": \"Small scratch beside the campus sticker\"\n}"
+              "raw": "{\n  \"title\": \"Blue Umbrella\",\n  \"status\": \"found\",\n  \"category\": \"bottle_umbrella\",\n  \"created_at\": \"2026-05-29T12:00:00\",\n  \"location\": \"Building A, 2nd floor\",\n  \"contact_info\": \"telegram @student\",\n  \"description\": \"Foldable umbrella with campus sticker\"\n}"
             },
             "url": "{{base_url}}/items"
           }
@@ -329,7 +329,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"item_id\": \"{{item_id}}\",\n  \"claimant_name\": \"API Claimant\",\n  \"contact_info\": \"telegram @claimant\",\n  \"message\": \"I lost this umbrella near Building A.\",\n  \"verification_answer\": \"black\"\n}"
+              "raw": "{\n  \"item_id\": \"{{item_id}}\",\n  \"claimant_name\": \"API Claimant\",\n  \"contact_info\": \"telegram @claimant\",\n  \"ownership_proof\": \"The umbrella has my initials under the handle and a small scratch near the strap.\"\n}"
             },
             "url": "{{base_url}}/claims"
           }

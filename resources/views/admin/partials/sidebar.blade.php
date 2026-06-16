@@ -10,6 +10,8 @@
         </a>
         <a class="nav-link text-white-50 px-3 py-2" href="{{ route('board.index') }}">Community Board</a>
         <a class="nav-link text-white-50 px-3 py-2" href="{{ route('claims.index') }}">Public Claims</a>
+        <a class="nav-link text-white-50 px-3 py-2" href="{{ route('admin.dashboard', ['section' => 'users']) }}">User Management</a>
+        <a class="nav-link text-white-50 px-3 py-2" href="{{ route('admin.dashboard', ['section' => 'audit']) }}">Audit Log</a>
     </nav>
     <div class="sidebar-logout position-absolute bottom-0 w-100 p-3 border-top border-secondary">
         <form method="post" action="{{ route('admin.logout') }}">

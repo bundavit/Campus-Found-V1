@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Item;
 use App\Models\ItemClaim;
 use App\Services\ClaimDataService;
+use App\Services\AuditService;
 use Illuminate\Http\Request;
 
 class ClaimController extends Controller
@@ -34,19 +35,41 @@ class ClaimController extends Controller
             'claimant_name' => ['nullable', 'string', 'max:255'],
             'contact_info' => ['required', 'string', 'max:255'],
             'message' => ['nullable', 'string', 'max:1000'],
+            'ownership_proof' => ['nullable', 'string', 'max:1000'],
             'verification_answer' => ['nullable', 'string', 'max:1000'],
+            'proof_image' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
         ]);
 
         $item = Item::findOrFail($validated['item_id']);
 
-        if ($item->status === 'found' && $item->verification_question && blank($validated['verification_answer'] ?? null)) {
-            return back()->withErrors(['verification_answer' => 'Answer the ownership verification question.']);
+        if ((int) $item->user_id === (int) $request->user()->id) {
+            return back()->withErrors(['item_id' => 'You cannot claim your own report.']);
         }
 
-        $claim = $claims->create($item, $validated, $request->user()->id);
+        $hasOpenClaim = ItemClaim::query()
+            ->where('item_id', $item->id)
+            ->where('user_id', $request->user()->id)
+            ->whereIn('status', ['pending', 'approved'])
+            ->exists();
+
+        if ($hasOpenClaim) {
+            return back()->withErrors(['item_id' => 'You already submitted a claim for this item.']);
+        }
+
+        $ownershipProof = $validated['ownership_proof']
+            ?? $validated['message']
+            ?? $validated['verification_answer']
+            ?? null;
+
+        if ($item->status === 'found' && blank($ownershipProof)) {
+            return back()->withErrors(['ownership_proof' => 'Explain how you can prove this item belongs to you.']);
+        }
+
+        $validated['ownership_proof'] = $ownershipProof;
+        $claim = $claims->create($item, $validated, $request->user()->id, $request->file('proof_image'));
 
         $message = $item->status === 'found'
-            ? 'Claim submitted for verification. The reporter will review your answer.'
+            ? 'Claim submitted. The reporter will review your private proof.'
             : 'Found report submitted. The owner will review it.';
 
         if ($request->expectsJson()) {
@@ -79,5 +102,23 @@ class ClaimController extends Controller
         $claims->review($claim, $validated['status'], $request->user()->id);
 
         return back()->with('success', 'Claim '.$validated['status'].' successfully.');
+    }
+
+    public function dispute(Request $request, ItemClaim $claim, AuditService $audit)
+    {
+        abort_unless((int) $claim->user_id === (int) $request->user()->id, 403);
+        abort_unless(in_array($claim->status, ['approved', 'rejected'], true), 422);
+
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'max:1000'],
+        ]);
+
+        $claim->update([
+            'dispute_status' => 'open',
+            'dispute_reason' => $validated['reason'],
+        ]);
+        $audit->record('claim.disputed', $claim, $validated['reason']);
+
+        return back()->with('success', 'Dispute submitted for administrator review.');
     }
 }

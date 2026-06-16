@@ -183,6 +183,11 @@ class ItemDataService
             Storage::disk('public')->delete($item->image_path);
         }
 
+        $item->claims()
+            ->whereNotNull('proof_image_path')
+            ->pluck('proof_image_path')
+            ->each(fn (string $path) => Storage::disk('public')->delete($path));
+
         $item->delete();
 
         return true;
@@ -190,9 +195,11 @@ class ItemDataService
 
     private function openItemsQuery()
     {
-        return Item::query()->whereDoesntHave(
-            'claims',
-            fn ($query) => $query->where('status', 'approved')
-        );
+        return Item::query()
+            ->where('moderation_status', 'active')
+            ->whereDoesntHave(
+                'claims',
+                fn ($query) => $query->where('status', 'approved')
+            );
     }
 }

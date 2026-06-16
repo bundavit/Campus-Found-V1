@@ -64,16 +64,21 @@
                     </div>
                     <h3>{{ $claim['item']['title'] ?? 'Unknown item' }}</h3>
                     <p><span>Claimant</span>{{ $claim['claimant_name'] }}</p>
-                    @if($claim['status'] === 'approved' || !empty($claim['can_review']) || (auth()->check() && (int) auth()->id() === (int) ($claim['user_id'] ?? 0)))
+                    @if(!empty($claim['can_view_private']))
                         <p><span>Contact</span>{{ $claim['contact_info'] }}</p>
                     @endif
-                    <div class="cf-message-preview">{{ $claim['message'] ?: 'No message provided.' }}</div>
+                    <div class="cf-message-preview">{{ $claim['ownership_proof'] ?: 'No proof provided.' }}</div>
                     <span class="cf-request-badge cf-request-{{ $claim['status_class'] }}">{{ $claim['status_label'] }}</span>
 
                     @if(!empty($claim['can_review']) && $claim['status'] === 'pending')
                         <div class="cf-claim-proof">
-                            <strong>Verification answer</strong>
-                            <p>{{ $claim['verification_answer'] ?: 'No answer provided.' }}</p>
+                            <strong>Private ownership proof</strong>
+                            <p>{{ $claim['ownership_proof'] ?: 'No proof provided.' }}</p>
+                            @if(!empty($claim['proof_image_url']))
+                                <a href="{{ $claim['proof_image_url'] }}" target="_blank" rel="noopener">
+                                    <img src="{{ $claim['proof_image_url'] }}" alt="Claim proof" class="cf-claim-proof-image">
+                                </a>
+                            @endif
                         </div>
                         <div class="cf-review-actions">
                             <form method="post" action="{{ route('claims.review', $claim['id']) }}">@csrf @method('PATCH')<input type="hidden" name="status" value="approved"><button class="cf-btn cf-btn-success" type="submit">Approve</button></form>
