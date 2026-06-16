@@ -50,7 +50,7 @@ class ItemSeeder extends Seeder
                 'category' => 'electronic',
                 'reported_at' => $now->copy()->subDays(3),
                 'location' => 'Computer Lab 3',
-                'contact_info' => 'admin@rupp.edu.kh',
+                'contact_info' => 'Telegram: @campus_found',
                 'description' => 'Logitech, no USB dongle in bag.',
             ],
         ];

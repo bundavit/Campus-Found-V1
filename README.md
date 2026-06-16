@@ -1,75 +1,141 @@
 # Campus Found
 
-Responsive lost-and-found website built with Laravel, Blade, MySQL, and Sanctum.
+Campus Found is a responsive lost-and-found management system for campus communities. Students and staff can browse reports, submit lost or found items, send ownership claims, and review claim activity. Administrators can moderate reports and claims from a protected dashboard.
 
-## Local setup
+## Technology Stack
+
+- Frontend: Blade templates, HTML, CSS, Bootstrap assets, Vite
+- Backend: Laravel, PHP
+- Database: MySQL
+- Authentication: Laravel session authentication and Sanctum API tokens
+- Storage: Laravel public disk with optimized WebP uploads
+- API testing: Postman collection
+
+## Main Features
+
+- Public home page and community board
+- Search, status filters, category filters, date filter, and sorting
+- User registration, login, logout, and account dashboard
+- User-owned report creation, editing, and deletion
+- Lost/found report image upload and optimization
+- Claim submission with ownership verification answers
+- Owner review for pending claims
+- Recently claimed section
+- Admin dashboard for reports, claims, users, moderation, and audit activity
+- Sanctum API endpoints with Postman examples
+- Responsive desktop and mobile layouts
+
+## Local Setup
 
 ```bash
 composer install
+npm install
 copy .env.example .env
 php artisan key:generate
+```
+
+Update `.env` with your own local database credentials:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=campus_found
+DB_USERNAME=your_local_user
+DB_PASSWORD=your_local_password
+```
+
+Then run:
+
+```bash
 php artisan migrate --seed
 php artisan storage:link
+npm run build
 php artisan serve
 ```
 
-Configure your own MySQL database and credentials in `.env` before migrating.
+Open the website at:
 
-## Required PHP extensions
+```text
+http://127.0.0.1:8000
+```
 
-- PDO MySQL
-- GD
-- Fileinfo
-- OpenSSL
-- Mbstring
+## Admin Access
 
-## Main features
+This project does not store a real administrator account or password in source code.
 
-- User registration, login, and logout
-- User-owned lost and found reports
-- Report editing and deletion
-- Optimized WebP image uploads
-- Ownership verification questions
-- Pending claim review and approval
-- Administrative report and claim management
-- Sanctum API and Postman collection
+For the current local admin-key flow, set a unique value in your local `.env`:
 
-## URLs
+```env
+LOSTFOUND_ADMIN_PASSWORD=replace-with-your-own-local-password
+```
 
-- Website: `http://127.0.0.1:8000`
-- Admin login: `http://127.0.0.1:8000/admin/login`
-- API base URL: `http://127.0.0.1:8000/api`
+Admin URL:
 
-Set `LOSTFOUND_ADMIN_PASSWORD` in `.env` before using the admin panel.
+```text
+http://127.0.0.1:8000/admin/login
+```
+
+Do not commit `.env`, real admin passwords, database passwords, API keys, exported database files, or local SQLite databases.
 
 ## Testing
 
 ```bash
-php artisan test
+composer test
+npm run build
+```
+
+Optional quality checks:
+
+```bash
 composer audit --locked
 vendor/bin/pint --test
 ```
 
+Current verified result:
+
+```text
+25 tests, 173 assertions
+```
+
 ## Postman
 
-Import `postman/LostFound_API.postman_collection.json`.
+Import:
 
-The collection uses separate owner and claimant tokens:
+```text
+postman/LostFound_API.postman_collection.json
+```
 
-1. Log in as the report owner.
-2. Create a report.
-3. Register or log in as a claimant.
-4. Submit a claim.
-5. Approve or reject the claim with the owner token.
+Before running requests, fill the collection variables locally:
 
-## Production checklist
+- `base_url`
+- `email`
+- `password`
+- `owner_token`
+- `claimant_token`
+
+The collection does not include real login credentials.
+
+## Security Notes
+
+- `.env` is ignored and must stay local.
+- Generated files, local databases, SQL dumps, storage uploads, and keys are ignored.
+- The seeded data is sample-only and does not create an administrator account.
+- Use unique passwords for local, staging, and production databases.
+- Rotate any credentials that were previously committed or shared.
+- If credentials were pushed in Git history, rewrite or recreate the repository history before public sharing.
+
+## Production Checklist
 
 - Set `APP_ENV=production`.
 - Set `APP_DEBUG=false`.
 - Set the public HTTPS `APP_URL`.
-- Generate a production `APP_KEY`.
-- Use unique database and admin passwords.
+- Generate a new production `APP_KEY`.
+- Use a dedicated production database user and password.
+- Configure mail credentials through environment variables only.
 - Run `php artisan migrate --force`.
 - Run `php artisan storage:link`.
 - Run `php artisan optimize`.
+- Configure queue workers if email notifications are enabled.
 - Configure persistent storage or object storage for uploaded images.
+- Enable HTTPS and rotate any exposed credentials before deployment.
