@@ -77,7 +77,11 @@ try {
     Add-Result "Admin: wrong password rejected" ($bad.Content -match 'Invalid|denied|error|Access' -or $bad.StatusCode -eq 302) ""
     $loginPage2 = Invoke-WebRequest "$base/admin/login" -WebSession $s -UseBasicParsing
     $token2 = Get-Token $loginPage2.Content
-    Invoke-WebRequest "$base/admin/login" -Method POST -WebSession $s -UseBasicParsing -Body @{ _token = $token2; password = 'RUPPSTAFF' } | Out-Null
+    $adminPassword = $env:LOSTFOUND_ADMIN_PASSWORD
+    if (-not $adminPassword) {
+        $adminPassword = Read-Host "LOSTFOUND_ADMIN_PASSWORD"
+    }
+    Invoke-WebRequest "$base/admin/login" -Method POST -WebSession $s -UseBasicParsing -Body @{ _token = $token2; password = $adminPassword } | Out-Null
     $dash = Invoke-WebRequest "$base/admin/dashboard" -WebSession $s -UseBasicParsing
     Add-Result "GET /admin/dashboard" ($dash.StatusCode -eq 200) ""
     Add-Result "Dashboard: stats cards" ($dash.Content -match 'Total Reports') ""
@@ -109,7 +113,16 @@ foreach ($asset in @('/assets/bootstrap-5.3.3/css/bootstrap.min.css', '/assets/b
 
 # --- API ---
 try {
-    $login = Invoke-RestMethod "$base/api/login" -Method POST -ContentType 'application/json' -Body '{"email":"admin@rupp.edu.kh","password":"password"}'
+    $apiEmail = $env:LOSTFOUND_CHECK_EMAIL
+    $apiPassword = $env:LOSTFOUND_CHECK_PASSWORD
+    if (-not $apiEmail) {
+        $apiEmail = Read-Host "API check email"
+    }
+    if (-not $apiPassword) {
+        $apiPassword = Read-Host "API check password"
+    }
+    $apiBody = @{ email = $apiEmail; password = $apiPassword } | ConvertTo-Json
+    $login = Invoke-RestMethod "$base/api/login" -Method POST -ContentType 'application/json' -Body $apiBody
     Add-Result "API login" ($null -ne $login.token) ""
     $items = Invoke-RestMethod "$base/api/items"
     Add-Result "API GET items (public)" ($items.Count -ge 1) "$($items.Count) items"

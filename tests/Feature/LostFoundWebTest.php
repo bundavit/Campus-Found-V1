@@ -260,7 +260,7 @@ class LostFoundWebTest extends TestCase
 
         $this->get('/admin')->assertRedirect(route('admin.login'));
 
-        $this->post('/admin/login', ['password' => 'RUPPSTAFF'])
+        $this->post('/admin/login', ['password' => 'TEST_ADMIN_PASSWORD'])
             ->assertRedirect(route('admin.dashboard'));
 
         $this->get('/admin')->assertRedirect(route('admin.dashboard'));
@@ -616,7 +616,7 @@ class LostFoundWebTest extends TestCase
 
         $claimId = ItemClaim::first()->id;
 
-        $this->post('/admin/login', ['password' => 'RUPPSTAFF']);
+        $this->post('/admin/login', ['password' => 'TEST_ADMIN_PASSWORD']);
 
         $this->get('/admin/dashboard')
             ->assertOk()
