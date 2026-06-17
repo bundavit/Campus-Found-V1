@@ -8,7 +8,7 @@
     <link rel="apple-touch-icon" href="{{ asset('assets/campus-found-logo-nav.png') }}">
     <link href="/assets/bootstrap-5.3.3/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="/assets/lostfound.css?v=20260614-1" rel="stylesheet">
+    <link href="/assets/lostfound.css?v=20260617-2" rel="stylesheet">
     @stack('styles')
 </head>
 <body class="bg-white">
@@ -197,6 +197,140 @@
                 }
             });
         })();
+
+        document.querySelectorAll('[data-password-toggle]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const wrapper = button.closest('.cf-password-field');
+                const input = wrapper?.querySelector('input');
+                const icon = button.querySelector('i');
+                if (!input || !icon) {
+                    return;
+                }
+
+                const isVisible = input.type === 'text';
+                input.type = isVisible ? 'password' : 'text';
+                button.setAttribute('aria-label', isVisible ? 'Show password' : 'Hide password');
+                icon.className = isVisible ? 'bi bi-eye' : 'bi bi-eye-slash';
+            });
+        });
+
+        document.querySelectorAll('[data-resend-form]').forEach(function (form) {
+            const button = form.querySelector('[data-resend-button]');
+            const message = form.querySelector('[data-resend-message]');
+            const storageKey = form.dataset.resendKey;
+            const seconds = Number(form.dataset.resendSeconds || 60);
+
+            if (!button || !message || !storageKey) {
+                return;
+            }
+
+            let timerId = null;
+
+            const render = function (remaining) {
+                if (remaining > 0) {
+                    button.disabled = true;
+                    button.textContent = 'Send New Code (' + remaining + 's)';
+                    message.textContent = 'Please wait before requesting another verification code.';
+                    return;
+                }
+
+                button.disabled = false;
+                button.textContent = 'Send New Code';
+                message.textContent = 'You can request a new code if you did not receive the email.';
+            };
+
+            const startCountdown = function (expiresAt) {
+                window.clearInterval(timerId);
+                const tick = function () {
+                    const remaining = Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000));
+                    render(remaining);
+
+                    if (remaining <= 0) {
+                        window.clearInterval(timerId);
+                        localStorage.removeItem(storageKey);
+                    }
+                };
+
+                tick();
+                timerId = window.setInterval(tick, 1000);
+            };
+
+            const stored = Number(localStorage.getItem(storageKey));
+            const serverUntil = form.dataset.resendUntil ? Date.parse(form.dataset.resendUntil) : 0;
+            const initialUntil = Math.max(stored || 0, serverUntil || 0);
+
+            if (initialUntil && initialUntil > Date.now()) {
+                startCountdown(initialUntil);
+            } else {
+                render(0);
+            }
+
+            form.addEventListener('submit', function () {
+                const expiresAt = Date.now() + (seconds * 1000);
+                localStorage.setItem(storageKey, String(expiresAt));
+                startCountdown(expiresAt);
+            });
+        });
+
+        document.querySelectorAll('[data-live-countdown]').forEach(function (node) {
+            const expiresAt = node.dataset.expiresAt ? Date.parse(node.dataset.expiresAt) : 0;
+            const expiredText = node.dataset.expiredText || 'Expired';
+
+            if (!expiresAt) {
+                return;
+            }
+
+            const render = function () {
+                const remainingMs = expiresAt - Date.now();
+
+                if (remainingMs <= 0) {
+                    node.textContent = expiredText;
+                    return false;
+                }
+
+                const totalSeconds = Math.ceil(remainingMs / 1000);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                node.textContent = 'Time remaining: ' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+
+                return true;
+            };
+
+            if (!render()) {
+                return;
+            }
+
+            const timer = window.setInterval(function () {
+                if (!render()) {
+                    window.clearInterval(timer);
+                }
+            }, 1000);
+        });
+
+        document.querySelectorAll('[data-image-preview-input]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                const wrapper = input.closest('label')?.querySelector('[data-image-preview]');
+                const preview = wrapper?.querySelector('[data-image-preview-tag]');
+                const file = input.files?.[0];
+
+                if (!wrapper || !preview) {
+                    return;
+                }
+
+                if (!file) {
+                    wrapper.classList.add('d-none');
+                    preview.removeAttribute('src');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    preview.src = String(event.target?.result || '');
+                    wrapper.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            });
+        });
     </script>
     @stack('scripts')
 </body>

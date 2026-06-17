@@ -2486,6 +2486,17 @@ html[data-theme="dark"] .admin-section-tabs .nav-link:not(.active):hover {
     font-weight: 700;
 }
 
+.cf-auth-switch a {
+    font-weight: 800;
+}
+
+.cf-auth-timer {
+    margin-top: 0.55rem;
+    color: var(--cf-primary);
+    font-size: 0.88rem;
+    font-weight: 850;
+}
+
 .cf-account-shell {
     padding-top: 2rem;
     padding-bottom: 5rem;
@@ -2657,6 +2668,10 @@ html[data-theme="dark"] .admin-section-tabs .nav-link:not(.active):hover {
 .cf-account-settings h3 {
     margin: 0 0 0.25rem;
     color: var(--cf-text);
+}
+
+.cf-account-section .cf-dispute-form {
+    margin-top: 0.2rem;
 }
 
 html[data-theme="dark"] .cf-account-tabs,
@@ -3690,4 +3705,183 @@ html[data-theme="dark"] .cf-account-row {
     display: grid;
     gap: 0.75rem;
     margin-top: 0.75rem;
+}
+
+.cf-auth-form {
+    width: min(100%, 34rem);
+    margin-inline: auto;
+    text-align: left;
+}
+
+.cf-auth-form .cf-btn {
+    width: 100%;
+}
+
+.cf-auth-note {
+    padding: 0.85rem 1rem;
+    color: var(--cf-muted, #607089);
+    background: var(--cf-surface-soft, #e5eef6);
+    border: 1px solid var(--cf-border, #d6e1ec);
+    border-radius: 0.75rem;
+    font-size: 0.92rem;
+    font-weight: 650;
+    line-height: 1.5;
+}
+
+.cf-password-field {
+    position: relative;
+}
+
+.cf-password-field input {
+    padding-right: 3rem;
+}
+
+.cf-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    color: var(--cf-muted, #607089);
+    background: transparent;
+    border: 0;
+    transform: translateY(-50%);
+}
+
+.cf-password-toggle:hover {
+    color: var(--cf-primary, #174a7e);
+}
+
+.cf-page-form label {
+    text-align: left;
+}
+
+.cf-page-form h3,
+.cf-account-heading,
+.cf-account-row,
+.cf-claim-card,
+.cf-empty-state {
+    text-align: left;
+}
+
+.cf-board-hero .cf-container {
+    max-width: 52rem;
+}
+
+.cf-board-hero p:not(.cf-eyebrow) {
+    margin-inline: auto;
+}
+
+.cf-history-filter {
+    align-items: flex-end;
+}
+
+.cf-claim-card p {
+    align-items: flex-start;
+}
+
+.cf-empty-state {
+    width: min(100%, 32rem);
+    margin-inline: auto;
+}
+
+.cf-danger-form {
+    border: 1px solid rgba(220, 38, 38, 0.22);
+}
+
+.cf-upload-preview {
+    margin-top: 0.85rem;
+    padding: 0.75rem;
+    background: var(--cf-surface-soft, #e5eef6);
+    border: 1px solid var(--cf-border, #d6e1ec);
+    border-radius: 0.85rem;
+}
+
+.cf-upload-preview img {
+    display: block;
+    width: min(100%, 22rem);
+    max-height: 18rem;
+    border-radius: 0.7rem;
+    object-fit: cover;
+    box-shadow: var(--cf-shadow);
+}
+
+html[data-theme="dark"] .cf-auth-note {
+    color: #d6dfed;
+    background: rgba(30, 41, 59, 0.94);
+    border-color: rgba(84, 102, 129, 0.65);
+}
+
+html[data-theme="dark"] .cf-auth-timer {
+    color: #ffd24a;
+}
+
+html[data-theme="dark"] .cf-password-toggle {
+    color: #c8d4e3;
+}
+
+html[data-theme="dark"] .cf-password-toggle:hover {
+    color: #ffd24a;
+}
+
+html[data-theme="dark"] .cf-danger-form {
+    border-color: rgba(239, 68, 68, 0.28);
+}
+
+html[data-theme="dark"] .cf-upload-preview {
+    background: rgba(30, 41, 59, 0.94);
+    border-color: rgba(84, 102, 129, 0.65);
+}
+
+@media (max-width: 767px) {
+    .cf-board-hero .cf-container,
+    .cf-board-hero h1,
+    .cf-board-hero p:not(.cf-eyebrow) {
+        text-align: center;
+    }
+
+    .cf-auth-form {
+        width: 100%;
+    }
+
+    .cf-page-form {
+        padding: 1.15rem;
+        border-radius: 0.9rem;
+    }
+
+    .cf-auth-note {
+        font-size: 0.88rem;
+        line-height: 1.45;
+    }
+
+    .cf-auth-switch {
+        font-size: 0.92rem;
+        line-height: 1.45;
+    }
+
+    .cf-history-filter {
+        justify-content: stretch;
+    }
+
+    .cf-history-filter label,
+    .cf-history-filter select {
+        width: 100%;
+    }
+
+    .cf-account-heading,
+    .cf-account-row-main,
+    .cf-account-row-meta,
+    .cf-account-message,
+    .cf-claim-card,
+    .cf-empty-state {
+        text-align: left;
+    }
+
+    .cf-claim-card p {
+        text-align: left;
+    }
 }

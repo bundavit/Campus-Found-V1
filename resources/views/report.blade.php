@@ -68,8 +68,15 @@
 
             <label>
                 <span>Attach Photo</span>
-                <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp">
+                <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" data-image-preview-input>
                 <small class="cf-field-help">Images are automatically resized and compressed.</small>
+                <div class="cf-upload-preview @if(empty($editing) || !($editItem->hasDisplayImage() ?? false)) d-none @endif" data-image-preview>
+                    <img
+                        src="@if(!empty($editing) && ($editItem->hasDisplayImage() ?? false)) {{ $editItem->displayImageUrl() }} @endif"
+                        alt="Selected report image preview"
+                        data-image-preview-tag
+                    >
+                </div>
             </label>
 
             <button type="submit" class="cf-btn cf-btn-primary">{{ $editing ? 'Save Changes' : 'Submit Report' }}</button>
