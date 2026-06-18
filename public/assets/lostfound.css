@@ -3308,13 +3308,15 @@ html[data-theme="dark"] .cf-account-row {
 .cf-claims-filter-bar {
     width: min(100%, 900px);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 1.2rem;
     margin-bottom: 2rem;
 }
 
 .cf-claims-page .cf-filter-row {
+    width: min(100%, 620px);
     justify-content: center;
     margin-bottom: 0;
 }
@@ -3331,6 +3333,39 @@ html[data-theme="dark"] .cf-account-row {
     width: min(100%, 300px);
     justify-content: center;
     margin: 0;
+}
+
+.cf-claims-page .cf-board-controls label {
+    justify-content: center;
+}
+
+.cf-board-page .cf-empty-state,
+.cf-claims-page .cf-empty-state {
+    text-align: center;
+}
+
+.cf-board-page .cf-empty-state,
+.cf-claims-page .cf-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.cf-board-page .cf-empty-state h2,
+.cf-board-page .cf-empty-state p,
+.cf-claims-page .cf-empty-state h2,
+.cf-claims-page .cf-empty-state p {
+    width: min(100%, 34rem);
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.cf-board-page .cf-empty-state .cf-btn,
+.cf-claims-page .cf-empty-state .cf-btn {
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .cf-claims-page .cf-empty-state,
