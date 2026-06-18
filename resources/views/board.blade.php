@@ -91,7 +91,7 @@
                 </div>
             @endforelse
         </div>
-        <div class="mt-4">
+        <div class="cf-pagination-wrap mt-4">
             {{ $items->withQueryString()->links() }}
         </div>
     </section>
