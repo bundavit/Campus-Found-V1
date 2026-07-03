@@ -7,7 +7,10 @@
 *.php diff=php
 
 *.js linguist-vendored
+*.mjs linguist-vendored
+*.cjs linguist-vendored
 *.js.map linguist-vendored
+package-lock.json linguist-generated
 *.ps1 linguist-vendored
 public/assets/bootstrap-5.3.3/** linguist-vendored
 public/assets/bootstrap-icons/** linguist-vendored
