@@ -62,6 +62,106 @@ Campus Found has two main areas:
 | Testing | PHPUnit feature tests |
 | Deployment | DigitalOcean, Nginx, PHP-FPM, Supervisor, Certbot |
 
+## Project Structure
+
+Campus Found keeps the standard Laravel folder layout so Artisan, Composer, Vite, tests, and deployment tools work normally. The project is organized by responsibility as follows:
+
+### Frontend
+
+User-facing UI, Blade pages, styling, and browser assets.
+
+- `resources/views/` - Blade templates for public pages, auth pages, dashboard, admin panel, and partials
+- `resources/css/` - source CSS loaded through Vite
+- `resources/js/` - frontend entry scripts
+- `public/assets/` - static images, Bootstrap, Bootstrap Icons, and custom CSS
+- `screenshots/` - portfolio screenshots used in the README
+
+### Backend
+
+Application logic, routes, controllers, models, services, and access control.
+
+- `app/Http/Controllers/` - web and API controllers
+- `app/Http/Middleware/` - authentication, verification, active-user, and admin guards
+- `app/Models/` - Eloquent models
+- `app/Services/` - business logic for reports, claims, found reports, email codes, and image handling
+- `app/Notifications/` - email notification classes
+- `routes/web.php` - browser routes
+- `routes/api.php` - API routes
+- `routes/console.php` - Artisan console routes
+- `config/` - Laravel and application configuration
+
+### Database
+
+Schema, seed data, factories, and database-backed application state.
+
+- `database/migrations/` - table definitions
+- `database/seeders/` - initial or demo data
+- `database/factories/` - test data factories
+- MySQL - main relational database
+- Laravel database queue - queued notifications and jobs
+
+### Authentication & Authorization
+
+Login, registration, verification, reset, user roles, and admin protection.
+
+- Laravel session authentication for web users
+- Email verification with expiring codes
+- Password reset by email code
+- Role-based access for `user`, `admin`, and `super_admin`
+- Laravel Sanctum for API authentication
+
+### Storage & Media
+
+Uploaded files, public storage links, and image handling.
+
+- `storage/app/public/` - uploaded item and claim images
+- `public/storage` - public symlink to storage uploads
+- WebP image optimization for uploaded reports
+- Runtime logs and cache stay ignored from Git
+
+### API & Integrations
+
+External-facing API docs and service integrations.
+
+- `postman/` - Postman API collection
+- Brevo SMTP - production email delivery
+- Laravel Sanctum - API token/session authentication
+
+### Testing & Quality
+
+Automated tests and project validation.
+
+- `tests/Feature/` - feature tests for main flows
+- `tests/Unit/` - unit tests if needed
+- `composer test` - Laravel/PHPUnit test runner
+- `composer audit --locked` - PHP dependency advisory check
+- `npm audit` - frontend dependency check
+- `npm run build` - production asset build
+
+### Deployment
+
+Production hosting, environment setup, and server responsibilities.
+
+- DigitalOcean Ubuntu server
+- Nginx web server
+- PHP-FPM 8.4
+- MySQL database
+- Supervisor for queue workers
+- Certbot SSL certificate
+- Namecheap DNS
+- `.env.example` - environment variable template
+- `composer.json` - PHP dependencies and deployment scripts
+- `package.json` - frontend build and portfolio screenshot scripts
+
+### Portfolio Tools
+
+Files used only to present the project professionally.
+
+- `screenshots/` - GitHub README screenshots
+- `scripts/capture-portfolio-screenshots.mjs` - screenshot automation
+- `scripts/prepare-screenshot-data.php` - local demo data preparation
+- `scripts/screenshot-config.example.json` - safe config template
+
 ## Architecture
 
 ```
@@ -168,7 +268,7 @@ php artisan queue:work
 Run before opening a pull request or publishing the repo:
 
 ```bash
-composer test          # 36 PHPUnit feature tests
+composer test          # 34 PHPUnit feature tests
 vendor/bin/pint --test # Laravel code style
 composer audit         # PHP dependency security audit
 npm audit              # JavaScript dependency security audit
@@ -194,6 +294,12 @@ Portfolio screenshots are captured at **1280×800** (viewport, not full-page scr
    ```
 
 Output is written to `screenshots/`. Local credentials in `scripts/screenshot-config.json` are gitignored — only the example file is tracked.
+
+To remove unused vendored frontend files (Bootstrap extras, unused icon SVGs):
+
+```bash
+php scripts/prune-public-assets.php
+```
 
 ## Admin Access
 
@@ -288,7 +394,7 @@ Use `.env.example` and `scripts/screenshot-config.example.json` as templates onl
 
 Campus Found is deployed as a production Laravel website for [campusfound.me](https://campusfound.me). The codebase includes automated feature coverage for authentication, email verification, password reset, reports, claims, image uploads, account actions, API endpoints, admin moderation, user management, audit logs, and dispute resolution.
 
-**Test suite:** 36 tests, 253 assertions (PHPUnit).
+**Test suite:** 34 tests, 251 assertions (PHPUnit).
 
 ## License
 
