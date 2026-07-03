@@ -275,26 +275,6 @@ npm audit              # JavaScript dependency security audit
 npm run build          # Production asset build
 ```
 
-## Regenerating Screenshots
-
-Portfolio screenshots are captured at **1280×800** (viewport, not full-page scroll).
-
-1. Copy the example config and adjust if needed:
-
-   **Windows:** `Copy-Item scripts/screenshot-config.example.json scripts/screenshot-config.json`
-
-   **macOS / Linux:** `cp scripts/screenshot-config.example.json scripts/screenshot-config.json`
-
-2. Start the app locally (`php artisan serve`).
-3. Install Playwright browsers once: `npx playwright install chromium`
-4. Seed demo data and capture:
-
-   ```bash
-   npm run screenshots
-   ```
-
-Output is written to `screenshots/`. Local credentials in `scripts/screenshot-config.json` are gitignored — only the example file is tracked.
-
 ## Admin Access
 
 This project does not store a real administrator account or password in source code.
