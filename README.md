@@ -359,19 +359,6 @@ Before running requests, fill the collection variables locally:
 
 The collection does not include real login credentials.
 
-## Repository Safety
-
-These files are **gitignored** and must never be committed:
-
-| File | Why |
-|------|-----|
-| `.env` | Database, mail, and app secrets |
-| `scripts/screenshot-config.json` | Local demo login passwords |
-| `auth.json` | Composer credentials |
-| `storage/`, `vendor/`, `node_modules/` | Generated or installed dependencies |
-
-Use `.env.example` and `scripts/screenshot-config.example.json` as templates only.
-
 ## Production Checklist
 
 - Set `APP_ENV=production` and `APP_DEBUG=false`
