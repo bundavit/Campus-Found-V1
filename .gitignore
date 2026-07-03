@@ -62,3 +62,4 @@ postman/postman/
 PROJECT_*.md
 /scripts/screenshot-config.json
 /scripts/.playwright-browsers/
+/scripts/prune-public-assets.php

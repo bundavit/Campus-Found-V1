@@ -295,12 +295,6 @@ Portfolio screenshots are captured at **1280×800** (viewport, not full-page scr
 
 Output is written to `screenshots/`. Local credentials in `scripts/screenshot-config.json` are gitignored — only the example file is tracked.
 
-To remove unused vendored frontend files (Bootstrap extras, unused icon SVGs):
-
-```bash
-php scripts/prune-public-assets.php
-```
-
 ## Admin Access
 
 This project does not store a real administrator account or password in source code.
